@@ -28,6 +28,7 @@ public class ApiService {
 
     }
 
+
     public Mono<ResponseEntity<PlayerDto>> findByName(String name) {
         Mono<String> retornoMono = httpClienteName(name);
         return retornoMono.map(retorno -> {
@@ -49,9 +50,11 @@ public class ApiService {
 
     public PlayerDto jsonToPlayerDto(String json) throws IOException {
         PlayerDto playerDto = new PlayerDto();
-        playerDto.setPlayer_name(extractPlayerNameFromJson(json, "Name"));
         playerDto.setPlayer_code(extractPlayerNameFromJson(json, "Id"));
+        playerDto.setPlayer_name(extractPlayerNameFromJson(json, "Name"));
         playerDto.setKda(extractPlayerNameFromJson(json, "FameRatio"));
+        playerDto.setKillFame(extractPlayerNameFromJson(json, "KillFame"));
+        playerDto.setDeathFame(extractPlayerNameFromJson(json, "DeathFame"));
         return playerDto;
     }
 }
