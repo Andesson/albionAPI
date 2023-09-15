@@ -12,4 +12,8 @@ public class PlayerDto {
     private String player_code;
     @NotBlank
     private String kda;
+    @NotBlank
+    private String KillFame;
+    @NotBlank
+    private String DeathFame;
 }
