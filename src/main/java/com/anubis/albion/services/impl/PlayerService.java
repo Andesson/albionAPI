@@ -1,4 +1,4 @@
-package com.anubis.albion.services;
+package com.anubis.albion.services.impl;
 
 import org.springframework.stereotype.Service;
 

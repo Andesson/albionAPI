@@ -11,7 +11,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "PLAYERS")
-public class Player implements Serializable {
+public class PlayerModel implements Serializable {
 
     private static final long serialVersion = 1L;
 
@@ -22,6 +22,7 @@ public class Player implements Serializable {
     private String player_name;
     @Nullable
     private String player_code;
+    private double KDA;
     @Column(name = "DT_UPDATEINFO", nullable = false)
     private LocalDateTime updateInfo;
     private boolean mainChar;
