@@ -6,4 +6,5 @@ import reactor.core.publisher.Mono;
 
 public interface IAlbionService {
     public Mono<ResponseEntity<PlayerModel>> findByName(String name);
+    public Mono<ResponseEntity<PlayerModel>> findByCode(String player_id);
 }

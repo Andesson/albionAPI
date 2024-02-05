@@ -10,8 +10,8 @@ public class AlbionRepository implements IAlbionRepository {
     private final WebClient client = WebClient.create();
 
     @Override
-    public Mono<String> httpClientByName(String name) {
-        String url = Constants.ALBION_URL.getValue() + Constants.ALBION_SEARCH.getValue() + name;
+    public Mono<String> HttpClientAlbionBase(String apiBaseUri,String name) {
+        String url = apiBaseUri + name;
         System.out.println(url);
         return client.get()
                 .uri(url)

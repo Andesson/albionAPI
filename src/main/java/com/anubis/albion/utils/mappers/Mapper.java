@@ -36,9 +36,32 @@ public class Mapper<T> implements EntityMapper<T> {
         }
     }
 
+    @Override
+    public PlayerDto mapJson(String json) throws Exception {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(json);
+            PlayerDto playerDto = new PlayerDto();
+            playerDto.setPlayer_code(extractFromJson(jsonNode, "Id", null));
+            playerDto.setPlayer_name(extractFromJson(jsonNode, "Name", null));
+            playerDto.setKda(extractFromJson(jsonNode, "FameRatio", null));
+            playerDto.setKillFame(extractFromJson(jsonNode, "KillFame", null));
+            playerDto.setDeathFame(extractFromJson(jsonNode, "DeathFame", null));
+
+            return playerDto;
+        } catch (IOException e) {
+            throw new RuntimeException("Error mapping JSON to PlayerDto:", e);
+        }
+    }
+
     private String extractFromJson(JsonNode jsonNode, String param, String path) {
-        JsonNode playerNameNode = jsonNode.findPath(path).findPath(param);
-        return playerNameNode.asText();
+        if (path.isEmpty()){
+            JsonNode playerNameNode = jsonNode.findPath(path).findPath(param);
+            return playerNameNode.asText();
+        } else {
+            JsonNode playerNameNode = jsonNode.findPath(param);
+            return playerNameNode.asText();
+        }
     }
 
     public PlayerModel convertPlayerDtoToPlayerModel(PlayerDto playerDto) {
