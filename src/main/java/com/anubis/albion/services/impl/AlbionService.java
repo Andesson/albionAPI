@@ -57,7 +57,7 @@ public class AlbionService implements IAlbionService {
                 .flatMap(playerDtoJson -> {
                     try {
                         PlayerDto playerDto = Mapper.mapJsonPath(playerDtoJson, Constants.PLAYER_JSON_PATH.getValue());
-                        if (playerDto.getPlayer_name().isBlank() || playerDto.getPlayer_code().isBlank()) {
+                        if (playerDto.getPlayer_name().isBlank() || playerDto.getPlayer_id().isBlank()) {
                             return Mono.empty();
                         }
                         return Mono.just(playerDto);
@@ -73,7 +73,7 @@ public class AlbionService implements IAlbionService {
                 .flatMap(playerDtoJson -> {
                     try {
                         PlayerDto playerDto = Mapper.mapJsonPath(playerDtoJson, Constants.PLAYER_JSON_PATH.getValue());
-                        if (playerDto.getPlayer_name().isBlank() || playerDto.getPlayer_code().isBlank()) {
+                        if (playerDto.getPlayer_name().isBlank() || playerDto.getPlayer_id().isBlank()) {
                             return Mono.empty();
                         }
                         return Mono.just(playerDto);
