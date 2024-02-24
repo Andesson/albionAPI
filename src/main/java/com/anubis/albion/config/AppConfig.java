@@ -16,7 +16,7 @@ public class AppConfig {
         return new AlbionRepository();
     }
     @Bean
-    public EntityMapper<?> entityMapper(ObjectMapper objectMapper) {
-        return new Mapper<>(objectMapper);
+    public EntityMapper entityMapper(ObjectMapper objectMapper) {
+        return new Mapper(objectMapper);
     }
 }

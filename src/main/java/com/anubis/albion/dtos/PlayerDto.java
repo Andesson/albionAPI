@@ -32,13 +32,13 @@ public class PlayerDto {
     private String avatarRing;
 
     @JsonAlias({"killFame", "KillFame"})
-    private String killFame;
+    private int killFame;
 
     @JsonAlias({"deathFame", "DeathFame"})
-    private String deathFame;
+    private int deathFame;
 
     @JsonAlias({"fameRatio", "FameRatio"})
-    private String fameRatio;
+    private double fameRatio;
 
     @JsonAlias({"totalKills", "totalKills"})
     private String totalKills;

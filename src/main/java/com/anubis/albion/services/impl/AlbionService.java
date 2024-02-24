@@ -7,6 +7,8 @@ import com.anubis.albion.services.IAlbionService;
 import com.anubis.albion.utils.Constants;
 import com.anubis.albion.utils.EntityMapper;
 import com.anubis.albion.utils.Exceptions;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,14 @@ import reactor.core.publisher.Mono;
 @Service
 public class AlbionService implements IAlbionService {
     private final IAlbionRepository albionRepository;
-    private final EntityMapper Mapper;
+    private final ObjectMapper objectMapper;
+    private final EntityMapper mapper;
     @Autowired
-    public AlbionService(IAlbionRepository albionRepository, EntityMapper map)
+    public AlbionService(IAlbionRepository albionRepository, ObjectMapper objectMapper, EntityMapper map)
     {
         this.albionRepository = albionRepository;
-        this.Mapper = map;
+        this.objectMapper = objectMapper;
+        this.mapper = map;
     }
     //region public
     @Override
@@ -31,7 +35,7 @@ public class AlbionService implements IAlbionService {
         }
         return GetFindByName(name)
                 .map(playerDto -> {
-                    PlayerModel playerModel = Mapper.convertPlayerDtoToPlayerModel(playerDto);
+                    PlayerModel playerModel = mapper.convert(playerDto, PlayerModel.class);
                     return ResponseEntity.ok().body(playerModel);
                 })
                 .defaultIfEmpty(ResponseEntity.notFound().build());
@@ -44,10 +48,10 @@ public class AlbionService implements IAlbionService {
         }
         return GetFindById(player_code)
                 .map(playerDto -> {
-                    PlayerModel playerModel = Mapper.convertPlayerDtoToPlayerModel(playerDto);
+                    PlayerModel playerModel = mapper.convert(playerDto, PlayerModel.class);
                     return ResponseEntity.ok().body(playerModel);
                 })
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                ;
     }
     //endregion Public
     //region Private
@@ -55,31 +59,26 @@ public class AlbionService implements IAlbionService {
     {
         return albionRepository.HttpClientAlbionBase(Constants.ALBION_URL_PLAYER.getValue(), name)
                 .flatMap(playerDtoJson -> {
+                    PlayerDto playerDto = null;
                     try {
-                        PlayerDto playerDto = Mapper.mapJsonPath(playerDtoJson, Constants.PLAYER_JSON_PATH.getValue());
-                        if (playerDto.getPlayer_name().isBlank() || playerDto.getPlayer_id().isBlank()) {
-                            return Mono.empty();
-                        }
-                        return Mono.just(playerDto);
-                    } catch (Exception e) {
-                        return Mono.error(e);
+                        playerDto = objectMapper.readValue(playerDtoJson, PlayerDto.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
                     }
+                    return Mono.just(playerDto);
                 });
     }
-
-    private Mono<PlayerDto> GetFindById(String id)
+    private Mono<PlayerDto> GetFindById(String code)
     {
-        return albionRepository.HttpClientAlbionBase(Constants.ALBION_ID_URL.getValue(), id)
+        return albionRepository.HttpClientAlbionBase(Constants.ALBION_ID_URL.getValue(), code)
                 .flatMap(playerDtoJson -> {
+                    PlayerDto playerDto = null;
                     try {
-                        PlayerDto playerDto = Mapper.mapJsonPath(playerDtoJson, Constants.PLAYER_JSON_PATH.getValue());
-                        if (playerDto.getPlayer_name().isBlank() || playerDto.getPlayer_id().isBlank()) {
-                            return Mono.empty();
-                        }
-                        return Mono.just(playerDto);
-                    } catch (Exception e) {
-                        return Mono.error(e);
+                        playerDto = objectMapper.readValue(playerDtoJson, PlayerDto.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
                     }
+                    return Mono.just(playerDto);
                 });
     }
     //endregion Private

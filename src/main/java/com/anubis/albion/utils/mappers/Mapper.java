@@ -1,75 +1,62 @@
 package com.anubis.albion.utils.mappers;
 
 import com.anubis.albion.dtos.PlayerDto;
+import com.anubis.albion.entities.Player;
 import com.anubis.albion.models.PlayerModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.anubis.albion.utils.EntityMapper;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-import java.util.Random;
 import java.util.UUID;
 
-public class Mapper<T> implements EntityMapper<T> {
+public class Mapper implements EntityMapper {
     private final ObjectMapper objectMapper;
     @Autowired
     public Mapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
-
     @Override
-    public PlayerDto mapJsonPath(String json, String path) throws Exception {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(json);
-            PlayerDto playerDto = new PlayerDto();
-            playerDto.setPlayer_code(extractFromJson(jsonNode, "Id", path));
-            playerDto.setPlayer_name(extractFromJson(jsonNode, "Name", path));
-            playerDto.setKda(extractFromJson(jsonNode, "FameRatio", path));
-            playerDto.setKillFame(extractFromJson(jsonNode, "KillFame", path));
-            playerDto.setDeathFame(extractFromJson(jsonNode, "DeathFame", path));
-
-            return playerDto;
-        } catch (IOException e) {
-            throw new RuntimeException("Error mapping JSON to PlayerDto:", e);
-        }
+    public <Source, Destination> Destination convert(Source source, Class<Destination> destinationClass) {
+        Destination destination = objectMapper.convertValue(source, (Class<? extends Destination>) destinationClass);
+        return destination;
     }
-
     @Override
-    public PlayerDto mapJson(String json) throws Exception {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(json);
-            PlayerDto playerDto = new PlayerDto();
-            playerDto.setPlayer_code(extractFromJson(jsonNode, "Id", null));
-            playerDto.setPlayer_name(extractFromJson(jsonNode, "Name", null));
-            playerDto.setKda(extractFromJson(jsonNode, "FameRatio", null));
-            playerDto.setKillFame(extractFromJson(jsonNode, "KillFame", null));
-            playerDto.setDeathFame(extractFromJson(jsonNode, "DeathFame", null));
-
-            return playerDto;
-        } catch (IOException e) {
-            throw new RuntimeException("Error mapping JSON to PlayerDto:", e);
-        }
-    }
-
-    private String extractFromJson(JsonNode jsonNode, String param, String path) {
-        if (path.isEmpty()){
-            JsonNode playerNameNode = jsonNode.findPath(path).findPath(param);
-            return playerNameNode.asText();
-        } else {
-            JsonNode playerNameNode = jsonNode.findPath(param);
-            return playerNameNode.asText();
-        }
-    }
-
     public PlayerModel convertPlayerDtoToPlayerModel(PlayerDto playerDto) {
         PlayerModel playerModel = new PlayerModel();
-        playerModel.setPlayer_id(UUID.randomUUID());
+        playerModel.setId(UUID.randomUUID());
+        playerModel.setPlayer_id(playerDto.getPlayer_id());
         playerModel.setPlayer_name(playerDto.getPlayer_name());
-        playerModel.setPlayer_code(playerDto.getPlayer_code());
-        playerModel.setKDA((double) playerModel.getKDA());
+        playerModel.setGuild_Id(playerDto.getGuild_Id());
+        playerModel.setGuild_Name(playerDto.getGuild_Name());
+        playerModel.setAlliance_Id(playerDto.getAlliance_Id());
+        playerModel.setAlliance_Name(playerDto.getAlliance_Name());
+        playerModel.setAvatar(playerDto.getAlliance_Name());
+        playerModel.setAvatarRing(playerDto.getAvatarRing());
+        playerModel.setKillFame(playerDto.getKillFame());
+        playerModel.setDeathFame(playerDto.getDeathFame());
+        playerModel.setFameRatio(playerDto.getFameRatio());
+        playerModel.setTotalKills(playerDto.getTotalKills());
+        playerModel.setGvgKills(playerDto.getGvgKills());
+        playerModel.setGvgWon(playerDto.getGvgWon());
         return playerModel;
+    }
+    @Override
+    public Player convertPlayerModelToPlayer(PlayerModel playerModel) {
+        Player player = new Player();
+        player.setPlayer_code(playerModel.getPlayer_id());
+        player.setPlayer_name(playerModel.getPlayer_name());
+        player.setGuild_Id(playerModel.getGuild_Id());
+        player.setGuild_Name(playerModel.getGuild_Name());
+        player.setAlliance_Id(playerModel.getAlliance_Id());
+        player.setAlliance_Name(playerModel.getAlliance_Name());
+        player.setAvatar(playerModel.getAlliance_Name());
+        player.setAvatarRing(playerModel.getAvatarRing());
+        player.setKillFame(playerModel.getKillFame());
+        player.setDeathFame(playerModel.getDeathFame());
+        player.setFameRatio(playerModel.getFameRatio());
+        player.setTotalKills(playerModel.getTotalKills());
+        player.setGvgKills(playerModel.getGvgKills());
+        player.setGvgWon(playerModel.getGvgWon());
+        return player;
     }
 }
