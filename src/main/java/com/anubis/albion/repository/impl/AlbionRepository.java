@@ -15,7 +15,7 @@ public class AlbionRepository implements IAlbionRepository {
     public Mono<String> HttpClientAlbionBase(String apiBaseUri,String name) {
         String url = apiBaseUri + name;
         System.out.println(url);
-        return client.get()
+        Mono<String> result = client.get()
                 .uri(url)
                 .retrieve()
                 .bodyToMono(String.class)
@@ -27,6 +27,9 @@ public class AlbionRepository implements IAlbionRepository {
                         return Mono.error(e);
                     }
                 });
-
+        result.subscribe(response -> {
+            System.out.println(response);
+        });
+        return result;
     }
 }

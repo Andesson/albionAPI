@@ -1,6 +1,7 @@
 package com.anubis.albion.services.impl;
 
 import com.anubis.albion.dtos.PlayerDto;
+import com.anubis.albion.dtos.PlayerResponse;
 import com.anubis.albion.models.PlayerModel;
 import com.anubis.albion.repository.IAlbionRepository;
 import com.anubis.albion.services.IAlbionService;
@@ -59,26 +60,25 @@ public class AlbionService implements IAlbionService {
     {
         return albionRepository.HttpClientAlbionBase(Constants.ALBION_URL_PLAYER.getValue(), name)
                 .flatMap(playerDtoJson -> {
-                    PlayerDto playerDto = null;
                     try {
-                        playerDto = objectMapper.readValue(playerDtoJson, PlayerDto.class);
+                        PlayerResponse playerResponse = objectMapper.readValue(playerDtoJson, PlayerResponse.class);
+                        PlayerDto playerDto = playerResponse.getPlayers()[0];
+                        return Mono.just(playerDto);
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
-                    return Mono.just(playerDto);
                 });
     }
     private Mono<PlayerDto> GetFindById(String code)
     {
         return albionRepository.HttpClientAlbionBase(Constants.ALBION_ID_URL.getValue(), code)
                 .flatMap(playerDtoJson -> {
-                    PlayerDto playerDto = null;
                     try {
-                        playerDto = objectMapper.readValue(playerDtoJson, PlayerDto.class);
+                        PlayerDto playerDto = objectMapper.readValue(playerDtoJson, PlayerDto.class);
+                        return Mono.just(playerDto);
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
-                    return Mono.just(playerDto);
                 });
     }
     //endregion Private
