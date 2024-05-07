@@ -15,6 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class AlbionService implements IAlbionService {
     private final IAlbionRepository albionRepository;
@@ -29,15 +34,17 @@ public class AlbionService implements IAlbionService {
     }
     //region public
     @Override
-    public Mono<ResponseEntity<PlayerModel>> findByName(String name)
+    public Mono<ResponseEntity<List<PlayerModel>>> findByName(String name)
     {
         if (name.isBlank()) {
             return Mono.error(new IllegalArgumentException(Exceptions.NAME_IS_NULL.getValue()));
         }
         return GetFindByName(name)
-                .map(playerDto -> {
-                    PlayerModel playerModel = mapper.convert(playerDto, PlayerModel.class);
-                    return ResponseEntity.ok().body(playerModel);
+                .map(playerDtoList -> {
+                    List<PlayerModel> playerModelList = playerDtoList.stream()
+                            .map(playerDto -> mapper.convert(playerDto, PlayerModel.class))
+                            .collect(Collectors.toList());
+                    return ResponseEntity.ok().body(playerModelList);
                 })
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
@@ -51,21 +58,20 @@ public class AlbionService implements IAlbionService {
                 .map(playerDto -> {
                     PlayerModel playerModel = mapper.convert(playerDto, PlayerModel.class);
                     return ResponseEntity.ok().body(playerModel);
-                })
-                ;
+                });
     }
     //endregion Public
     //region Private
-    private Mono<PlayerDto> GetFindByName(String name)
+    private Mono<List<PlayerDto>> GetFindByName(String name)
     {
         return albionRepository.HttpClientAlbionBase(Constants.ALBION_URL_PLAYER.getValue(), name)
                 .flatMap(playerDtoJson -> {
                     try {
                         PlayerResponse playerResponse = objectMapper.readValue(playerDtoJson, PlayerResponse.class);
-                        PlayerDto playerDto = playerResponse.getPlayers()[0];
-                        return Mono.just(playerDto);
+                        List<PlayerDto> playerDtoList = Arrays.asList(playerResponse.getPlayers());
+                        return Mono.just(playerDtoList);
                     } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
+                        return Mono.error(e);
                     }
                 });
     }

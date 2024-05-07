@@ -8,6 +8,7 @@ public enum Constants {
     ALBION_V2_URL("https://west.albion-online-data.com/api/v2/stats"),
     ALBION_URL_PLAYER("https://gameinfo.albiononline.com/api/gameinfo/search?q="),
     ALBION_ID_URL("https://gameinfo.albiononline.com/api/gameinfo/players/"),
+    ALBION_ID_GUILD_URL("https://gameinfo.albiononline.com/api/gameinfo/guilds/"),
     //endregion Albion_API
 
     ;
